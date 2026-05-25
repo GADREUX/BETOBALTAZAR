@@ -1,35 +1,61 @@
-{
-  "name": "beto-baltazar-corretor",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.4",
-    "@emailjs/browser": "^4.4.1",
-    "next": "14.2.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "lucide-react": "^0.451.0",
-    "react-hot-toast": "^2.4.1",
-    "date-fns": "^4.1.0",
-    "qrcode": "^1.5.4"
-  },
-  "devDependencies": {
-    "@types/node": "^22.7.5",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
-    "@types/qrcode": "^1.5.5",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.15",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.3"
+import { format, formatDistanceToNow, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+export const money = (v: number | null | undefined) =>
+  (v ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+export const fmtDate = (d: string | Date | null | undefined) => {
+  if (!d) return '—';
+  try {
+    return format(typeof d === 'string' ? new Date(d) : d, "dd/MM/yyyy", { locale: ptBR });
+  } catch {
+    return '—';
   }
-}
+};
+
+export const fmtDateTime = (d: string | Date | null | undefined) => {
+  if (!d) return '—';
+  try {
+    return format(typeof d === 'string' ? new Date(d) : d, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+  } catch {
+    return '—';
+  }
+};
+
+export const timeAgo = (d: string | Date | null | undefined) => {
+  if (!d) return '—';
+  try {
+    return formatDistanceToNow(typeof d === 'string' ? new Date(d) : d, {
+      addSuffix: true,
+      locale: ptBR,
+    });
+  } catch {
+    return '—';
+  }
+};
+
+export const daysUntil = (d: string | Date | null | undefined) => {
+  if (!d) return null;
+  try {
+    return differenceInDays(typeof d === 'string' ? new Date(d) : d, new Date());
+  } catch {
+    return null;
+  }
+};
+
+export const slugify = (s: string) =>
+  s.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+export const fmtPhone = (phone: string) => {
+  const d = phone.replace(/\D/g, '');
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return phone;
+};
+
+export const cn = (...classes: (string | boolean | undefined | null)[]) =>
+  classes.filter(Boolean).join(' ');
